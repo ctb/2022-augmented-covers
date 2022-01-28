@@ -4,6 +4,7 @@ NOTEBOOKS = [
     "index.ipynb",
     "gut-real.ipynb",
     "zymomock.ipynb",
+    "gut-real-k51.ipynb",
 ]
 
 
