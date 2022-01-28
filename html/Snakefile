@@ -1,0 +1,20 @@
+import os
+
+NOTEBOOKS = [
+    "index.ipynb",
+    "gut-real.ipynb"
+]
+
+
+rule publish:
+    input:
+        [ f"html/{os.path.basename(nb[:-6])}.html" for nb in NOTEBOOKS ]
+
+
+rule make_html:
+    input:
+        "{name}.ipynb"
+    output:
+        "html/{name}.html"
+    shell:
+        "python -m nbconvert {input} --to html --stdout > {output}"
