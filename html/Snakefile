@@ -5,6 +5,9 @@ NOTEBOOKS = [
     "gut-real.ipynb",
     "zymomock.ipynb",
     "gut-real-k51.ipynb",
+    "gut-clust-queries2.ipynb",
+    "gut-clustnbhds.ipynb",
+    "gut-clustqueries.ipynb",
 ]
 
 

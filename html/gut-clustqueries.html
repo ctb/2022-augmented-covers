@@ -3,7 +3,7 @@
 <head><meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>index</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>gut-clustqueries</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 
 
 
@@ -14259,14 +14259,999 @@ a.anchor-link {
 
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="examples">examples<a class="anchor-link" href="#examples">&#182;</a></h2><p><a href="gut-real.html"><code>gut real</code> data set - p8808mo11</a> - k=31</p>
-<p><a href="zymomock.html"><code>zymomock</code> data set - SRR606249</a> - k=31</p>
-<h2 id="experiments">experiments<a class="anchor-link" href="#experiments">&#182;</a></h2><p><a href="gut-real-k51.html"><code>gut real</code> data set, k=51 - p8808mo11</a> - k=51</p>
-<p><a href="gut-clust-queries2.html"><code>gut real</code>, clustering queries, showing queries to clustered queries</a></p>
-<p><a href="gut-clustnbhds.html"><code>gut real</code>, clustering neighborhoods, showing nbhds to clustered nbhds</a>
-<a href="gut-clustqueries.html"><code>gut real</code>, clustering neighborhoods, showing clustered queries to nbhds</a></p>
+<h2 id="cluster-the-gut-queries">cluster the gut queries<a class="anchor-link" href="#cluster-the-gut-queries">&#182;</a></h2><p>here, we cluster the gut queries by max containment, for display.</p>
+
+<pre><code>rm -fr gut-clust-queries
+mkdir gut-clust-queries
+../2022-sourmash-uniqify/sourmash-uniqify.py gut/gut-queries.zip --max-containment --merge --prefix gut-clust-queries/
+
+# put the cluster sigs in as the left side
+sourmash sig cat gut-clust-queries/*.sig -o gut-clust-queries/gut-clust-queries-queries.zip
+
+# put the original _neighborhoods_ in as right side
+ln gut/gut-nbhds.zip gut-clust-queries/gut-clust-queries-nbhds.zip
+
+# link in metagenome
+ln gut/p8808mo11.abundtrim.sig gut-clust-queries/</code></pre>
 
 </div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[1]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;gut-clust-queries&#39;</span>
+<span class="n">acc</span> <span class="o">=</span> <span class="s1">&#39;p8808mo11&#39;</span>
+<span class="n">ksize</span><span class="o">=</span><span class="mi">31</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[2]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">metag_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">acc</span><span class="si">}</span><span class="s1">.abundtrim.sig&#39;</span>
+<span class="n">queries_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">-queries.zip&#39;</span>
+<span class="n">nbhds_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">-nbhds.zip&#39;</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[3]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sourmash</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[31]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_ident</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="s2">&quot;pick off identifier, stripping off nbhd: prefix if present.&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;nbhd:&#39;</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span>
+    <span class="k">return</span> <span class="n">name</span>
+
+<span class="k">def</span> <span class="nf">load_gather</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">gather_rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+        <span class="n">gather_rows</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+    <span class="n">full_idents</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">gather_d</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">gather_keys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">gather_rows</span><span class="p">:</span>
+        <span class="n">ident</span> <span class="o">=</span> <span class="n">get_ident</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+        <span class="n">full_idents</span><span class="p">[</span><span class="n">ident</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[:</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">gather_d</span><span class="p">[</span><span class="n">ident</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span>
+        <span class="n">gather_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ident</span><span class="p">)</span>
+        
+    <span class="k">return</span> <span class="n">gather_keys</span><span class="p">,</span> <span class="n">gather_d</span><span class="p">,</span> <span class="n">full_idents</span>
+
+<span class="k">def</span> <span class="nf">gather_and_load</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">metag_filename</span><span class="p">,</span> <span class="n">query_sigs</span><span class="p">,</span> <span class="n">nbhd_sigs</span><span class="p">,</span> <span class="n">ksize</span><span class="o">=</span><span class="mi">31</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">metag_filename</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">query_sigs</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">nbhd_sigs</span><span class="p">)</span>
+    
+    <span class="n">query_out</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">/queries.gather.csv&quot;</span>
+    <span class="n">nbhd_out</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">/nbhd.gather.csv&quot;</span>
+    <span class="n">stdout1_out</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">/queries.gather.out&quot;</span>
+    <span class="n">stdout2_out</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">/nbhd.gather.out&quot;</span>
+    
+    <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;sourmash gather -k </span><span class="si">{</span><span class="n">ksize</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">metag_filename</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">query_sigs</span><span class="si">}</span><span class="s2"> -o </span><span class="si">{</span><span class="n">query_out</span><span class="si">}</span><span class="s2"> --ignore-abundance &gt;&amp; </span><span class="si">{</span><span class="n">stdout1_out</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">query_out</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;** </span><span class="si">{</span><span class="n">query_out</span><span class="si">}</span><span class="s2"> already exists; not rerunning sourmash gather on queries&quot;</span><span class="p">)</span>
+        
+    <span class="n">stdout1</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">stdout1_out</span><span class="p">,</span> <span class="s1">&#39;rt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+
+    <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;sourmash gather -k </span><span class="si">{</span><span class="n">ksize</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">metag_filename</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">nbhd_sigs</span><span class="si">}</span><span class="s2"> -o </span><span class="si">{</span><span class="n">nbhd_out</span><span class="si">}</span><span class="s2"> --ignore-abundance &gt;&amp; </span><span class="si">{</span><span class="n">stdout2_out</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">nbhd_out</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;** </span><span class="si">{</span><span class="n">nbhd_out</span><span class="si">}</span><span class="s2"> already exists; not rerunning sourmash gather on nbhds&quot;</span><span class="p">)</span>
+        
+    <span class="n">stdout2</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">stdout2_out</span><span class="p">,</span> <span class="s1">&#39;rt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+       
+    <span class="n">gather1_keys</span><span class="p">,</span> <span class="n">gather1_d</span><span class="p">,</span> <span class="n">full_idents</span> <span class="o">=</span> <span class="n">load_gather</span><span class="p">(</span><span class="n">query_out</span><span class="p">)</span>
+    <span class="n">gather2_keys</span><span class="p">,</span> <span class="n">gather2_d</span><span class="p">,</span> <span class="n">full_idents2</span> <span class="o">=</span> <span class="n">load_gather</span><span class="p">(</span><span class="n">nbhd_out</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">full_idents2</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">full_idents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;nbhd:&#39;</span><span class="p">):</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span>
+            <span class="n">full_idents</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+    
+    <span class="n">metag</span> <span class="o">=</span> <span class="n">sourmash</span><span class="o">.</span><span class="n">load_one_signature</span><span class="p">(</span><span class="n">metag_filename</span><span class="p">,</span> <span class="n">ksize</span><span class="o">=</span><span class="n">ksize</span><span class="p">)</span>
+    
+    <span class="n">queries</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sourmash</span><span class="o">.</span><span class="n">load_file_as_signatures</span><span class="p">(</span><span class="n">query_sigs</span><span class="p">))</span>
+    <span class="n">queries_d</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">ss</span> <span class="ow">in</span> <span class="n">queries</span><span class="p">:</span>
+        <span class="n">ident</span> <span class="o">=</span> <span class="n">get_ident</span><span class="p">(</span><span class="n">ss</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">queries_d</span><span class="p">[</span><span class="n">ident</span><span class="p">]</span> <span class="o">=</span> <span class="n">ss</span>
+        
+    <span class="n">nbhds</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sourmash</span><span class="o">.</span><span class="n">load_file_as_signatures</span><span class="p">(</span><span class="n">nbhd_sigs</span><span class="p">))</span>
+    <span class="n">nbhds_d</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">ss</span> <span class="ow">in</span> <span class="n">nbhds</span><span class="p">:</span>
+        <span class="n">ident</span> <span class="o">=</span> <span class="n">get_ident</span><span class="p">(</span><span class="n">ss</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">nbhds_d</span><span class="p">[</span><span class="n">ident</span><span class="p">]</span> <span class="o">=</span> <span class="n">ss</span>
+        
+    <span class="n">tup</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;augmented&#39;</span><span class="p">,</span> <span class="s1">&#39;metag, queries_d, nbhds_d, gather1_keys, gather1_d, gather2_keys, gather2_d, full_idents, stdout1, stdout2&#39;</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">tup</span><span class="p">(</span><span class="n">metag</span><span class="p">,</span> <span class="n">queries_d</span><span class="p">,</span> <span class="n">nbhds_d</span><span class="p">,</span> <span class="n">gather1_keys</span><span class="p">,</span> <span class="n">gather1_d</span><span class="p">,</span> <span class="n">gather2_keys</span><span class="p">,</span> <span class="n">gather2_d</span><span class="p">,</span> <span class="n">full_idents</span><span class="p">,</span> <span class="n">stdout1</span><span class="p">,</span> <span class="n">stdout2</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">t</span>
+    
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Running-the-things">Running the things<a class="anchor-link" href="#Running-the-things">&#182;</a></h2>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[32]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="n">gather_and_load</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">metag_filename</span><span class="p">,</span> <span class="n">queries_filename</span><span class="p">,</span> <span class="n">nbhds_filename</span><span class="p">,</span> <span class="n">ksize</span><span class="o">=</span><span class="n">ksize</span><span class="p">)</span>
+<span class="n">metag</span><span class="p">,</span> <span class="n">queries_d</span><span class="p">,</span> <span class="n">nbhds_d</span><span class="p">,</span> <span class="n">gather1_keys</span><span class="p">,</span> <span class="n">gather1_d</span><span class="p">,</span> <span class="n">gather2_keys</span><span class="p">,</span> <span class="n">gather2_d</span><span class="p">,</span> <span class="n">full_idents</span><span class="p">,</span> <span class="n">stdout1</span><span class="p">,</span> <span class="n">stdout2</span> <span class="o">=</span> <span class="n">t</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>sourmash gather -k 31 gut-clust-queries/p8808mo11.abundtrim.sig gut-clust-queries/gut-clust-queries-queries.zip -o gut-clust-queries/queries.gather.csv --ignore-abundance &gt;&amp; gut-clust-queries/queries.gather.out
+** gut-clust-queries/queries.gather.csv already exists; not rerunning sourmash gather on queries
+sourmash gather -k 31 gut-clust-queries/p8808mo11.abundtrim.sig gut-clust-queries/gut-clust-queries-nbhds.zip -o gut-clust-queries/nbhd.gather.csv --ignore-abundance &gt;&amp; gut-clust-queries/nbhd.gather.out
+** gut-clust-queries/nbhd.gather.csv already exists; not rerunning sourmash gather on nbhds
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="gather-output">gather output<a class="anchor-link" href="#gather-output">&#182;</a></h2>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[33]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">stdout1</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>
+
+overlap     p_query p_match
+---------   ------- -------
+5.6 Mbp        2.0%   91.7%    CP048626.1 Blautia producta ATCC 2734...
+5.0 Mbp        1.8%   99.6%    DABGPL010000001.1 TPA_asm: Escherichi...
+3.2 Mbp        1.1%   99.3%    JULC01000001.1 Bifidobacterium scardo...
+2.9 Mbp        1.0%   89.6%    SMCQ01000001.1 Longibaculum muris str...
+1.6 Mbp        0.5%   51.8%    HF995324.1 Firmicutes bacterium CAG:6...
+0.9 Mbp        0.3%   27.9%    WMQE01000038.1 Turicibacter sanguinis...
+0.8 Mbp        0.3%   37.7%    AEKO01000011.1 Streptococcus vestibul...
+0.7 Mbp        0.2%   29.6%    JAABLG010000001.1 Streptococcus vesti...
+0.6 Mbp        0.2%   32.5%    UQNI01000001.1 uncultured Ruminococca...
+0.6 Mbp        0.2%   17.9%    QVGF01000001.1 Lachnospiraceae bacter...
+0.6 Mbp        0.2%   16.2%    BAHW02000078.1 Clostridiales bacteriu...
+0.5 Mbp        0.2%   15.6%    URPP01000001.1 uncultured Clostridial...
+0.6 Mbp        0.2%   22.7%    CABHOC010000001.1 Bifidobacterium lon...
+496.0 kbp      0.2%   12.4%    CZYD01000001.1 Terrisporobacter othin...
+475.0 kbp      0.2%   14.6%    CAAEUS010000001.1 TPA_asm: uncultured...
+411.0 kbp      0.1%   10.3%    OBJV01000049.1 Clostridium tertium is...
+403.0 kbp      0.1%   16.0%    CM003575.1 Veillonella sp. DORA_A_3_1...
+370.0 kbp      0.1%    1.0%    PDMO01000909.1 Cyclospora cayetanensi...
+350.0 kbp      0.1%   19.2%    CAAEVI010000001.1 TPA_asm: Erysipelot...
+354.0 kbp      0.1%   12.1%    CYYS01000001.1 Turicibacter sanguinis...
+316.0 kbp      0.1%    8.9%    CYZX01000001.1 Clostridium disporicum...
+222.0 kbp      0.1%    5.2%    CAAFUY010000001.1 TPA_asm: uncultured...
+181.0 kbp      0.1%    7.8%    UQGF01000001.1 uncultured Actinomyces...
+362.0 kbp      0.1%    9.5%    CP047191.1 Streptococcus thermophilus...
+210.0 kbp      0.1%    3.6%    QUIC01000001.1 Ruminococcus sp. AM46-...
+153.0 kbp      0.1%    7.1%    LZMY01000001.1 Haemophilus parainflue...
+155.0 kbp      0.1%    7.1%    NCVD01000051.1 Streptococcus mitis st...
+145.0 kbp      0.0%    6.7%    PNHV01000001.1 Actinomyces graevenitz...
+165.0 kbp      0.0%    4.4%    UQQU01000001.1 uncultured Clostridium...
+141.0 kbp      0.0%    4.3%    FR883346.1 Clostridium sp. CAG:221 ge...
+120.0 kbp      0.0%    4.5%    WKYR01000010.1 Megasphaera sp. BIOML-...
+122.0 kbp      0.0%    6.1%    JWDF01000004.1 Streptomyces cattleya ...
+119.0 kbp      0.0%    2.2%    JNHJ01000001.1 Phocaeicola vulgatus s...
+105.0 kbp      0.0%    6.5%    JRND01000001.1 Lancefieldella parvulu...
+
+found 34 matches total;
+the recovered matches hit 10.0% of the query
+
+
+
+== This is sourmash version 4.2.4.dev0+g73aeb155.d20220116. ==
+
+== Please cite Brown and Irber (2016), doi:10.21105/joss.00027. ==
+
+
+selecting specified query k=31
+
+loaded query: p8808mo11... (k=31, DNA)
+
+loading from gut-clust-queries/gut-clust-queries-queries.zip...
+
+                                                                               
+
+loaded 1 databases.
+
+Starting prefetch sweep across databases.
+
+Found 34 signatures via prefetch; now doing gather.
+
+found less than 50.0 kbp in common. =&gt; exiting
+
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[34]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">stdout2</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>
+
+overlap     p_query p_match
+---------   ------- -------
+9.5 Mbp        3.3%  100.0%    nbhd:CVRR01000001.1 Roseburia faecis ...
+8.7 Mbp        3.0%   99.5%    nbhd:NIHW01000001.1 [Ruminococcus] gn...
+7.8 Mbp        2.7%  100.0%    nbhd:DABGPL010000001.1 TPA_asm: Esche...
+7.6 Mbp        2.7%   99.2%    nbhd:CP048626.1 Blautia producta ATCC...
+7.6 Mbp        2.6%   97.8%    nbhd:CZAB01000001.1 [Clostridium] clo...
+7.4 Mbp        2.6%   99.6%    nbhd:AENW01000060.1 Clostridium sp. H...
+6.8 Mbp        2.4%   99.1%    nbhd:HF996869.1 Clostridium hathewayi...
+5.8 Mbp        2.0%   96.4%    nbhd:GL834357.1 Clostridium symbiosum...
+5.6 Mbp        1.8%   90.7%    nbhd:WTVF01000090.1 Enterocloster ald...
+4.8 Mbp        1.7%   98.6%    nbhd:JH599901.1 Coprobacillus sp. 8_2...
+4.1 Mbp        1.4%   99.8%    nbhd:JULC01000001.1 Bifidobacterium s...
+4.0 Mbp        1.3%   95.4%    nbhd:CABJAX010000001.1 Lachnospiracea...
+3.8 Mbp        1.3%   96.0%    nbhd:JH590866.1 Lachnospiraceae bacte...
+3.6 Mbp        1.3%   99.4%    nbhd:FMFU01000020.1 uncultured Clostr...
+3.5 Mbp        1.2%   99.2%    nbhd:MARQ01000035.1 Clostridium perfr...
+3.4 Mbp        1.2%   97.3%    nbhd:SMCQ01000001.1 Longibaculum muri...
+3.5 Mbp        1.1%   91.7%    nbhd:SPHM01000100.1 Pseudoflavonifrac...
+3.1 Mbp        1.0%   95.4%    nbhd:CABIYM010000001.1 Anaerostipes c...
+2.9 Mbp        1.0%   95.5%    nbhd:AZYA01000001.1 Bifidobacterium s...
+3.1 Mbp        0.9%   86.8%    nbhd:FMEP01000075.1 uncultured Rumino...
+2.6 Mbp        0.9%   99.2%    nbhd:CP019721.1 Veillonella parvula s...
+2.6 Mbp        0.8%   90.3%    nbhd:NFLB01000001.1 [Clostridium] spi...
+2.1 Mbp        0.7%   96.1%    nbhd:USJS01000001.1 uncultured Blauti...
+2.0 Mbp        0.7%   94.8%    nbhd:LT629846.1 Romboutsia sp. DR1 st...
+1.8 Mbp        0.6%   92.9%    nbhd:HF995324.1 Firmicutes bacterium ...
+1.6 Mbp        0.6%   98.4%    nbhd:LR793273.1 Streptococcus salivar...
+1.6 Mbp        0.4%   81.3%    nbhd:AEDS01000070.1 Veillonella atypi...
+1.3 Mbp        0.4%   94.5%    nbhd:QGMT01000001.1 Clostridium parap...
+8.8 Mbp        0.4%   12.2%    nbhd:WNAL01000100.1 Roseburia faecis ...
+1.1 Mbp        0.4%   94.2%    nbhd:WMQE01000038.1 Turicibacter sang...
+1.1 Mbp        0.3%   84.1%    nbhd:KV794391.1 Streptococcus sp. HMS...
+1.1 Mbp        0.3%   77.6%    nbhd:FACG01000001.1 Peptoclostridium ...
+6.0 Mbp        0.3%   13.5%    nbhd:JAGQ01000001.1 [Ruminococcus] gn...
+0.8 Mbp        0.3%   97.8%    nbhd:URPP01000001.1 uncultured Clostr...
+0.7 Mbp        0.2%   96.7%    nbhd:UQNI01000001.1 uncultured Rumino...
+2.1 Mbp        0.2%   30.1%    nbhd:CAAFOE010000001.1 TPA_asm: uncul...
+1.0 Mbp        0.2%   62.0%    nbhd:CABHOC010000001.1 Bifidobacteriu...
+0.8 Mbp        0.2%   70.2%    nbhd:CZYD01000001.1 Terrisporobacter ...
+1.3 Mbp        0.2%   40.9%    nbhd:JAABLG010000001.1 Streptococcus ...
+6.5 Mbp        0.2%    7.3%    nbhd:KB851023.1 Clostridium clostridi...
+1.1 Mbp        0.2%   42.4%    nbhd:CM003575.1 Veillonella sp. DORA_...
+8.8 Mbp        0.2%    5.3%    nbhd:CYXV01000001.1 Roseburia faecis ...
+0.6 Mbp        0.2%   79.2%    nbhd:OBJV01000049.1 Clostridium terti...
+458.0 kbp      0.2%   95.2%    nbhd:CAAEVI010000001.1 TPA_asm: Erysi...
+0.5 Mbp        0.2%   79.6%    nbhd:CYYS01000001.1 Turicibacter sang...
+0.6 Mbp        0.1%   70.5%    nbhd:CYZX01000001.1 Clostridium dispo...
+2.6 Mbp        0.1%   14.7%    nbhd:AEXI01000023.1 Veillonella parvu...
+7.1 Mbp        0.1%    5.1%    nbhd:NIHV01000001.1 [Ruminococcus] gn...
+1.4 Mbp        0.1%   26.1%    nbhd:AEKO01000011.1 Streptococcus ves...
+4.0 Mbp        0.1%    8.7%    nbhd:KE384163.1 Clostridium clostridi...
+350.0 kbp      0.1%   96.0%    nbhd:UQGF01000001.1 uncultured Actino...
+3.9 Mbp        0.1%    8.1%    nbhd:JAAIUC010000010.1 Tyzzerella nex...
+0.8 Mbp        0.1%   34.5%    nbhd:QUIC01000001.1 Ruminococcus sp. ...
+3.4 Mbp        0.1%    8.5%    nbhd:NFLO01000001.1 Drancourtella sp....
+1.2 Mbp        0.1%   23.1%    nbhd:CAAEUS010000001.1 TPA_asm: uncul...
+6.5 Mbp        0.1%    4.3%    nbhd:CABJBJ010000001.1 Hungatella hat...
+1.7 Mbp        0.1%   16.0%    nbhd:QVGF01000001.1 Lachnospiraceae b...
+291.0 kbp      0.1%   93.8%    nbhd:LZMY01000001.1 Haemophilus parai...
+441.0 kbp      0.1%   61.7%    nbhd:CAAFUY010000001.1 TPA_asm: uncul...
+3.7 Mbp        0.1%    7.3%    nbhd:CAAKOI010000001.1 Flavonifractor...
+292.0 kbp      0.1%   90.1%    nbhd:JWDF01000004.1 Streptomyces catt...
+389.0 kbp      0.1%   66.3%    nbhd:NCVD01000051.1 Streptococcus mit...
+286.0 kbp      0.1%   88.1%    nbhd:JNHJ01000001.1 Phocaeicola vulga...
+3.5 Mbp        0.1%    7.2%    nbhd:RQNR01000100.1 Clostridium perfr...
+3.5 Mbp        0.1%    7.1%    nbhd:SPHR01000011.1 Intestinibacter b...
+256.0 kbp      0.1%   96.5%    nbhd:JRND01000001.1 Lancefieldella pa...
+7.4 Mbp        0.1%    3.1%    nbhd:UAVW01000021.1 [Clostridium] clo...
+1.2 Mbp        0.1%   19.2%    nbhd:PDMO01000909.1 Cyclospora cayeta...
+7.2 Mbp        0.1%    2.8%    nbhd:CABKQS010000001.1 [Clostridium] ...
+235.0 kbp      0.1%   84.3%    nbhd:PNHV01000001.1 Actinomyces graev...
+1.9 Mbp        0.1%   10.2%    nbhd:UQGB01000001.1 uncultured Clostr...
+4.5 Mbp        0.1%    4.1%    nbhd:HF995415.1 Coprobacillus sp. CAG...
+276.0 kbp      0.1%   64.9%    nbhd:FR883346.1 Clostridium sp. CAG:2...
+0.9 Mbp        0.1%   20.2%    nbhd:AVLJ01000001.1 UNVERIFIED_ORG: C...
+1.1 Mbp        0.1%   16.0%    nbhd:CP047191.1 Streptococcus thermop...
+2.2 Mbp        0.1%    7.9%    nbhd:BAHW02000078.1 Clostridiales bac...
+5.5 Mbp        0.1%    3.1%    nbhd:QVIB01000001.1 Dorea longicatena...
+2.2 Mbp        0.1%    7.7%    nbhd:CAAEOZ010000001.1 TPA_asm: uncul...
+211.0 kbp      0.1%   76.3%    nbhd:WKYR01000010.1 Megasphaera sp. B...
+5.8 Mbp        0.1%    2.7%    nbhd:JAAISL010000100.1 [Clostridium] ...
+2.7 Mbp        0.1%    5.6%    nbhd:CAAEKB010000001.1 TPA_asm: uncul...
+1.1 Mbp        0.1%   13.2%    nbhd:JVCZ01000002.1 Streptococcus par...
+2.5 Mbp        0.0%    5.6%    nbhd:NFJI01000001.1 [Clostridium] spi...
+1.3 Mbp        0.0%   10.7%    nbhd:UAWH01000019.1 Clostridium parap...
+2.9 Mbp        0.0%    4.3%    nbhd:SQQK01000001.1 Bifidobacterium d...
+343.0 kbp      0.0%   34.1%    nbhd:UQQU01000001.1 uncultured Clostr...
+2.5 Mbp        0.0%    4.2%    nbhd:LR778174.1 Veillonella parvula s...
+3.4 Mbp        0.0%    3.0%    nbhd:HF999299.1 Clostridium bartletti...
+3.3 Mbp        0.0%    3.2%    nbhd:NFHY01000001.1 Drancourtella sp....
+3.7 Mbp        0.0%    2.8%    nbhd:CP015406.2 Flavonifractor plauti...
+1.5 Mbp        0.0%    6.3%    nbhd:QXZZ01000034.1 Veillonella atypi...
+2.9 Mbp        0.0%    3.1%    nbhd:LBCG01000001.1 MAG: Roseburia sp...
+3.7 Mbp        0.0%    2.1%    nbhd:CABIZI010000001.1 Clostridiales ...
+3.5 Mbp        0.0%    2.1%    nbhd:KQ235823.1 Clostridium sp. 1_1_4...
+3.4 Mbp        0.0%    2.0%    nbhd:JAALMI010000001.1 Clostridium pe...
+3.1 Mbp        0.0%    1.9%    nbhd:DS499744.1 Anaerostipes caccae D...
+4.8 Mbp        0.0%    1.2%    nbhd:QSGP01000001.1 Enterocloster ald...
+
+found 97 matches total;
+the recovered matches hit 49.4% of the query
+
+
+
+== This is sourmash version 4.2.4.dev0+g73aeb155.d20220116. ==
+
+== Please cite Brown and Irber (2016), doi:10.21105/joss.00027. ==
+
+
+selecting specified query k=31
+
+loaded query: p8808mo11... (k=31, DNA)
+
+loading from gut-clust-queries/gut-clust-queries-nbhds.zip...
+
+                                                                               
+
+loaded 1 databases.
+
+Starting prefetch sweep across databases.
+
+Found 98 signatures via prefetch; now doing gather.
+
+found less than 50.0 kbp in common. =&gt; exiting
+
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="building-mapping-from-query-to-neighborhood">building mapping from query to neighborhood<a class="anchor-link" href="#building-mapping-from-query-to-neighborhood">&#182;</a></h2>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[35]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">remaining_hashes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">metag</span><span class="o">.</span><span class="n">minhash</span><span class="o">.</span><span class="n">hashes</span><span class="p">)</span>
+<span class="n">unique_hashes_1x</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">ident</span> <span class="ow">in</span> <span class="n">gather1_keys</span><span class="p">:</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">gather1_d</span><span class="p">[</span><span class="n">ident</span><span class="p">]</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">queries_d</span><span class="p">[</span><span class="n">ident</span><span class="p">]</span>
+    <span class="n">match_hashes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">minhash</span><span class="o">.</span><span class="n">hashes</span><span class="p">)</span>
+    <span class="n">unique_overlap</span> <span class="o">=</span> <span class="n">remaining_hashes</span> <span class="o">&amp;</span> <span class="n">match_hashes</span>
+    <span class="c1">#print(ident, len(remaining_hashes), len(unique_overlap), row[&#39;unique_intersect_bp&#39;], row[&#39;remaining_bp&#39;])</span>
+    <span class="n">remaining_hashes</span> <span class="o">-=</span> <span class="n">unique_overlap</span>
+    <span class="n">unique_hashes_1x</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ident</span><span class="p">,</span> <span class="n">unique_overlap</span><span class="p">))</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[36]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">remaining_hashes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">metag</span><span class="o">.</span><span class="n">minhash</span><span class="o">.</span><span class="n">hashes</span><span class="p">)</span>
+<span class="n">unique_hashes_2x</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">ident</span> <span class="ow">in</span> <span class="n">gather2_keys</span><span class="p">:</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">gather2_d</span><span class="p">[</span><span class="n">ident</span><span class="p">]</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">nbhds_d</span><span class="p">[</span><span class="n">ident</span><span class="p">]</span>
+    <span class="n">match_hashes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">minhash</span><span class="o">.</span><span class="n">hashes</span><span class="p">)</span>
+    <span class="n">unique_overlap</span> <span class="o">=</span> <span class="n">remaining_hashes</span> <span class="o">&amp;</span> <span class="n">match_hashes</span>
+    <span class="c1">#print(ident, len(remaining_hashes), len(unique_overlap), row[&#39;unique_intersect_bp&#39;], row[&#39;remaining_bp&#39;])</span>
+    <span class="n">remaining_hashes</span> <span class="o">-=</span> <span class="n">unique_overlap</span>
+    <span class="n">unique_hashes_2x</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ident</span><span class="p">,</span> <span class="n">unique_overlap</span><span class="p">))</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[37]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="p">(</span><span class="n">nbhd_ident</span><span class="p">,</span> <span class="n">nbhd_match</span><span class="p">)</span> <span class="ow">in</span> <span class="n">unique_hashes_2x</span><span class="p">:</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">query_ident</span><span class="p">,</span> <span class="n">query_match</span><span class="p">)</span> <span class="ow">in</span> <span class="n">unique_hashes_1x</span><span class="p">:</span>
+        <span class="n">overlap</span> <span class="o">=</span> <span class="n">query_match</span> <span class="o">&amp;</span> <span class="n">nbhd_match</span>
+        
+        <span class="k">if</span> <span class="n">overlap</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nbhd_ident</span><span class="si">}</span><span class="s2"> &lt;= </span><span class="si">{</span><span class="n">query_ident</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">overlap</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">total</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">overlap</span><span class="p">)</span>
+    <span class="c1">#print(&#39;xxx&#39;, nbhd_ident, len(nbhd_match), total)</span>
+    <span class="c1">#print(&#39;---&#39;)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>CVRR01000001.1 &lt;= CP048626.1 - 5
+CVRR01000001.1 &lt;= HF995324.1 - 9
+CVRR01000001.1 &lt;= AEKO01000011.1 - 1
+CVRR01000001.1 &lt;= UQNI01000001.1 - 1
+CVRR01000001.1 &lt;= QVGF01000001.1 - 4
+CVRR01000001.1 &lt;= BAHW02000078.1 - 1
+CVRR01000001.1 &lt;= CABHOC010000001.1 - 1
+CVRR01000001.1 &lt;= PDMO01000909.1 - 112
+CVRR01000001.1 &lt;= QUIC01000001.1 - 14
+CVRR01000001.1 &lt;= WKYR01000010.1 - 1
+NIHW01000001.1 &lt;= CP048626.1 - 6
+NIHW01000001.1 &lt;= SMCQ01000001.1 - 1
+NIHW01000001.1 &lt;= HF995324.1 - 7
+NIHW01000001.1 &lt;= QVGF01000001.1 - 8
+NIHW01000001.1 &lt;= BAHW02000078.1 - 6
+NIHW01000001.1 &lt;= CABHOC010000001.1 - 1
+NIHW01000001.1 &lt;= CP047191.1 - 1
+NIHW01000001.1 &lt;= QUIC01000001.1 - 3
+NIHW01000001.1 &lt;= JNHJ01000001.1 - 1
+DABGPL010000001.1 &lt;= CP048626.1 - 2
+DABGPL010000001.1 &lt;= DABGPL010000001.1 - 5017
+DABGPL010000001.1 &lt;= PDMO01000909.1 - 1
+CP048626.1 &lt;= CP048626.1 - 5621
+CP048626.1 &lt;= HF995324.1 - 3
+CP048626.1 &lt;= QVGF01000001.1 - 9
+CP048626.1 &lt;= BAHW02000078.1 - 1
+CZAB01000001.1 &lt;= JULC01000001.1 - 1
+CZAB01000001.1 &lt;= HF995324.1 - 6
+CZAB01000001.1 &lt;= JAABLG010000001.1 - 1
+CZAB01000001.1 &lt;= QVGF01000001.1 - 6
+CZAB01000001.1 &lt;= URPP01000001.1 - 1
+CZAB01000001.1 &lt;= PDMO01000909.1 - 11
+CZAB01000001.1 &lt;= CYZX01000001.1 - 1
+CZAB01000001.1 &lt;= QUIC01000001.1 - 1
+AENW01000060.1 &lt;= SMCQ01000001.1 - 1
+AENW01000060.1 &lt;= HF995324.1 - 2
+AENW01000060.1 &lt;= QVGF01000001.1 - 10
+AENW01000060.1 &lt;= BAHW02000078.1 - 2
+AENW01000060.1 &lt;= PDMO01000909.1 - 3
+AENW01000060.1 &lt;= QUIC01000001.1 - 3
+AENW01000060.1 &lt;= JNHJ01000001.1 - 1
+HF996869.1 &lt;= HF995324.1 - 3
+HF996869.1 &lt;= AEKO01000011.1 - 1
+HF996869.1 &lt;= PDMO01000909.1 - 1
+HF996869.1 &lt;= QUIC01000001.1 - 2
+GL834357.1 &lt;= HF995324.1 - 2
+GL834357.1 &lt;= QVGF01000001.1 - 7
+GL834357.1 &lt;= BAHW02000078.1 - 1
+GL834357.1 &lt;= CZYD01000001.1 - 1
+GL834357.1 &lt;= PDMO01000909.1 - 5
+GL834357.1 &lt;= CYZX01000001.1 - 1
+WTVF01000090.1 &lt;= JULC01000001.1 - 1
+WTVF01000090.1 &lt;= HF995324.1 - 3
+WTVF01000090.1 &lt;= UQNI01000001.1 - 1
+WTVF01000090.1 &lt;= QVGF01000001.1 - 4
+WTVF01000090.1 &lt;= BAHW02000078.1 - 3
+WTVF01000090.1 &lt;= PDMO01000909.1 - 22
+WTVF01000090.1 &lt;= CYZX01000001.1 - 4
+WTVF01000090.1 &lt;= QUIC01000001.1 - 1
+WTVF01000090.1 &lt;= WKYR01000010.1 - 1
+JH599901.1 &lt;= SMCQ01000001.1 - 35
+JH599901.1 &lt;= AEKO01000011.1 - 1
+JH599901.1 &lt;= QVGF01000001.1 - 5
+JH599901.1 &lt;= URPP01000001.1 - 1
+JH599901.1 &lt;= PDMO01000909.1 - 3
+JH599901.1 &lt;= NCVD01000051.1 - 2
+JH599901.1 &lt;= JNHJ01000001.1 - 1
+JULC01000001.1 &lt;= JULC01000001.1 - 3196
+JULC01000001.1 &lt;= CABHOC010000001.1 - 17
+CABJAX010000001.1 &lt;= HF995324.1 - 3
+CABJAX010000001.1 &lt;= QVGF01000001.1 - 8
+CABJAX010000001.1 &lt;= BAHW02000078.1 - 4
+CABJAX010000001.1 &lt;= PDMO01000909.1 - 5
+CABJAX010000001.1 &lt;= QUIC01000001.1 - 8
+JH590866.1 &lt;= SMCQ01000001.1 - 2
+JH590866.1 &lt;= QVGF01000001.1 - 1
+JH590866.1 &lt;= BAHW02000078.1 - 1
+JH590866.1 &lt;= CABHOC010000001.1 - 1
+JH590866.1 &lt;= PDMO01000909.1 - 39
+JH590866.1 &lt;= QUIC01000001.1 - 1
+JH590866.1 &lt;= PNHV01000001.1 - 1
+JH590866.1 &lt;= WKYR01000010.1 - 5
+FMFU01000020.1 &lt;= SMCQ01000001.1 - 2
+FMFU01000020.1 &lt;= CZYD01000001.1 - 12
+FMFU01000020.1 &lt;= CAAEUS010000001.1 - 256
+FMFU01000020.1 &lt;= CM003575.1 - 1
+FMFU01000020.1 &lt;= CAAFUY010000001.1 - 1
+FMFU01000020.1 &lt;= UQQU01000001.1 - 5
+MARQ01000035.1 &lt;= WMQE01000038.1 - 3
+MARQ01000035.1 &lt;= URPP01000001.1 - 2
+MARQ01000035.1 &lt;= OBJV01000049.1 - 7
+MARQ01000035.1 &lt;= CYZX01000001.1 - 8
+MARQ01000035.1 &lt;= CAAFUY010000001.1 - 5
+MARQ01000035.1 &lt;= UQQU01000001.1 - 2
+MARQ01000035.1 &lt;= FR883346.1 - 7
+SMCQ01000001.1 &lt;= SMCQ01000001.1 - 2824
+SMCQ01000001.1 &lt;= WMQE01000038.1 - 1
+SMCQ01000001.1 &lt;= CAAEUS010000001.1 - 1
+SPHM01000100.1 &lt;= HF995324.1 - 1
+SPHM01000100.1 &lt;= QVGF01000001.1 - 7
+SPHM01000100.1 &lt;= PDMO01000909.1 - 9
+SPHM01000100.1 &lt;= QUIC01000001.1 - 9
+CABIYM010000001.1 &lt;= BAHW02000078.1 - 440
+CABIYM010000001.1 &lt;= QUIC01000001.1 - 2
+AZYA01000001.1 &lt;= CABHOC010000001.1 - 12
+AZYA01000001.1 &lt;= UQGF01000001.1 - 1
+FMEP01000075.1 &lt;= HF995324.1 - 5
+FMEP01000075.1 &lt;= UQNI01000001.1 - 1
+FMEP01000075.1 &lt;= QVGF01000001.1 - 17
+FMEP01000075.1 &lt;= BAHW02000078.1 - 1
+FMEP01000075.1 &lt;= PDMO01000909.1 - 6
+FMEP01000075.1 &lt;= QUIC01000001.1 - 3
+CP019721.1 &lt;= CM003575.1 - 121
+CP019721.1 &lt;= WKYR01000010.1 - 1
+NFLB01000001.1 &lt;= WMQE01000038.1 - 1
+NFLB01000001.1 &lt;= QVGF01000001.1 - 1
+NFLB01000001.1 &lt;= BAHW02000078.1 - 1
+NFLB01000001.1 &lt;= CZYD01000001.1 - 1
+NFLB01000001.1 &lt;= PDMO01000909.1 - 1
+NFLB01000001.1 &lt;= CAAEVI010000001.1 - 1
+USJS01000001.1 &lt;= HF995324.1 - 4
+USJS01000001.1 &lt;= AEKO01000011.1 - 1
+USJS01000001.1 &lt;= QVGF01000001.1 - 295
+USJS01000001.1 &lt;= QUIC01000001.1 - 2
+LT629846.1 &lt;= CZYD01000001.1 - 6
+LT629846.1 &lt;= CAAEUS010000001.1 - 7
+LT629846.1 &lt;= OBJV01000049.1 - 3
+LT629846.1 &lt;= UQQU01000001.1 - 11
+HF995324.1 &lt;= HF995324.1 - 1510
+HF995324.1 &lt;= QVGF01000001.1 - 2
+HF995324.1 &lt;= CZYD01000001.1 - 1
+LR793273.1 &lt;= AEKO01000011.1 - 415
+LR793273.1 &lt;= JAABLG010000001.1 - 245
+LR793273.1 &lt;= CYYS01000001.1 - 1
+LR793273.1 &lt;= CP047191.1 - 56
+LR793273.1 &lt;= NCVD01000051.1 - 4
+AEDS01000070.1 &lt;= CM003575.1 - 42
+QGMT01000001.1 &lt;= CZYD01000001.1 - 1
+QGMT01000001.1 &lt;= OBJV01000049.1 - 8
+QGMT01000001.1 &lt;= CYZX01000001.1 - 8
+QGMT01000001.1 &lt;= CAAFUY010000001.1 - 5
+QGMT01000001.1 &lt;= FR883346.1 - 1
+WNAL01000100.1 &lt;= WMQE01000038.1 - 3
+WNAL01000100.1 &lt;= PDMO01000909.1 - 6
+WNAL01000100.1 &lt;= JNHJ01000001.1 - 2
+WMQE01000038.1 &lt;= WMQE01000038.1 - 895
+WMQE01000038.1 &lt;= CYYS01000001.1 - 13
+WMQE01000038.1 &lt;= JNHJ01000001.1 - 1
+KV794391.1 &lt;= AEKO01000011.1 - 7
+KV794391.1 &lt;= JAABLG010000001.1 - 6
+KV794391.1 &lt;= CP047191.1 - 1
+KV794391.1 &lt;= NCVD01000051.1 - 9
+FACG01000001.1 &lt;= QVGF01000001.1 - 2
+FACG01000001.1 &lt;= CZYD01000001.1 - 8
+FACG01000001.1 &lt;= CAAEUS010000001.1 - 1
+FACG01000001.1 &lt;= CYZX01000001.1 - 1
+FACG01000001.1 &lt;= QUIC01000001.1 - 3
+JAGQ01000001.1 &lt;= UQNI01000001.1 - 1
+JAGQ01000001.1 &lt;= BAHW02000078.1 - 1
+JAGQ01000001.1 &lt;= QUIC01000001.1 - 5
+URPP01000001.1 &lt;= URPP01000001.1 - 540
+URPP01000001.1 &lt;= NCVD01000051.1 - 1
+URPP01000001.1 &lt;= UQQU01000001.1 - 1
+UQNI01000001.1 &lt;= UQNI01000001.1 - 602
+CAAFOE010000001.1 &lt;= QVGF01000001.1 - 77
+CAAFOE010000001.1 &lt;= BAHW02000078.1 - 2
+CABHOC010000001.1 &lt;= CABHOC010000001.1 - 491
+CZYD01000001.1 &lt;= CZYD01000001.1 - 465
+CZYD01000001.1 &lt;= CAAEUS010000001.1 - 1
+CZYD01000001.1 &lt;= CAAFUY010000001.1 - 1
+JAABLG010000001.1 &lt;= AEKO01000011.1 - 50
+JAABLG010000001.1 &lt;= JAABLG010000001.1 - 370
+JAABLG010000001.1 &lt;= CP047191.1 - 8
+JAABLG010000001.1 &lt;= NCVD01000051.1 - 2
+KB851023.1 &lt;= QVGF01000001.1 - 1
+KB851023.1 &lt;= BAHW02000078.1 - 1
+CM003575.1 &lt;= CM003575.1 - 235
+CYXV01000001.1 &lt;= PDMO01000909.1 - 5
+OBJV01000049.1 &lt;= OBJV01000049.1 - 393
+OBJV01000049.1 &lt;= CYZX01000001.1 - 10
+OBJV01000049.1 &lt;= CAAFUY010000001.1 - 5
+OBJV01000049.1 &lt;= UQQU01000001.1 - 4
+OBJV01000049.1 &lt;= FR883346.1 - 2
+CAAEVI010000001.1 &lt;= CAAEVI010000001.1 - 348
+CYYS01000001.1 &lt;= CYYS01000001.1 - 322
+CYZX01000001.1 &lt;= CYZX01000001.1 - 275
+CYZX01000001.1 &lt;= CAAFUY010000001.1 - 4
+CYZX01000001.1 &lt;= UQQU01000001.1 - 4
+CYZX01000001.1 &lt;= FR883346.1 - 1
+NIHV01000001.1 &lt;= QVGF01000001.1 - 1
+NIHV01000001.1 &lt;= QUIC01000001.1 - 1
+AEKO01000011.1 &lt;= AEKO01000011.1 - 274
+AEKO01000011.1 &lt;= CP047191.1 - 12
+AEKO01000011.1 &lt;= NCVD01000051.1 - 2
+KE384163.1 &lt;= PDMO01000909.1 - 8
+UQGF01000001.1 &lt;= UQGF01000001.1 - 180
+UQGF01000001.1 &lt;= PNHV01000001.1 - 3
+UQGF01000001.1 &lt;= JWDF01000004.1 - 5
+JAAIUC010000010.1 &lt;= QVGF01000001.1 - 2
+JAAIUC010000010.1 &lt;= QUIC01000001.1 - 1
+QUIC01000001.1 &lt;= QVGF01000001.1 - 8
+QUIC01000001.1 &lt;= BAHW02000078.1 - 5
+QUIC01000001.1 &lt;= PDMO01000909.1 - 1
+QUIC01000001.1 &lt;= CP047191.1 - 1
+QUIC01000001.1 &lt;= QUIC01000001.1 - 105
+NFLO01000001.1 &lt;= WKYR01000010.1 - 6
+CAAEUS010000001.1 &lt;= CAAEUS010000001.1 - 204
+CABJBJ010000001.1 &lt;= PDMO01000909.1 - 6
+QVGF01000001.1 &lt;= QVGF01000001.1 - 95
+LZMY01000001.1 &lt;= LZMY01000001.1 - 152
+CAAFUY010000001.1 &lt;= CAAFUY010000001.1 - 185
+CAAFUY010000001.1 &lt;= UQQU01000001.1 - 19
+CAAFUY010000001.1 &lt;= FR883346.1 - 3
+JWDF01000004.1 &lt;= PNHV01000001.1 - 4
+JWDF01000004.1 &lt;= JWDF01000004.1 - 111
+NCVD01000051.1 &lt;= NCVD01000051.1 - 125
+JNHJ01000001.1 &lt;= PDMO01000909.1 - 2
+JNHJ01000001.1 &lt;= JNHJ01000001.1 - 108
+JRND01000001.1 &lt;= JRND01000001.1 - 101
+PDMO01000909.1 &lt;= PDMO01000909.1 - 109
+PNHV01000001.1 &lt;= PNHV01000001.1 - 134
+FR883346.1 &lt;= UQQU01000001.1 - 1
+FR883346.1 &lt;= FR883346.1 - 120
+CP047191.1 &lt;= CP047191.1 - 101
+BAHW02000078.1 &lt;= BAHW02000078.1 - 88
+WKYR01000010.1 &lt;= WKYR01000010.1 - 104
+UAWH01000019.1 &lt;= UQQU01000001.1 - 1
+UQQU01000001.1 &lt;= UQQU01000001.1 - 91
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[38]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">plotly.graph_objects</span> <span class="k">as</span> <span class="nn">go</span>
+
+<span class="k">def</span> <span class="nf">make_fig</span><span class="p">(</span><span class="n">max_num</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1">#labels = obj.make_labels()</span>
+    <span class="c1">#src_l, dest_l, cnt_l, color_l, label_l = obj.make_lists()</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">src_l</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">dest_l</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">cnt_l</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">color_l</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">label_l</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="n">source_idx</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="n">query_ident</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">unique_hashes_1x</span><span class="p">):</span>
+        <span class="n">source_idx</span><span class="p">[</span><span class="n">query_ident</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_idents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">query_ident</span><span class="p">,</span> <span class="s1">&#39;LOST: &#39;</span> <span class="o">+</span> <span class="n">query_ident</span><span class="p">))</span>
+    <span class="n">dest_idx</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">source_idx</span><span class="p">[</span><span class="s2">&quot;unassigned&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_hashes_1x</span><span class="p">)</span>
+    <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;unassigned&quot;</span><span class="p">)</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_hashes_1x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="n">nbhd_ident</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">unique_hashes_2x</span><span class="p">):</span>
+        <span class="n">dest_idx</span><span class="p">[</span><span class="n">nbhd_ident</span><span class="p">]</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="n">n</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_idents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nbhd_ident</span><span class="p">,</span> <span class="s1">&#39;LOST: &#39;</span> <span class="o">+</span> <span class="n">query_ident</span><span class="p">))</span>
+        
+    <span class="c1">#source_idx[&quot;unassigned&quot;] = base + n + 1</span>
+    
+    <span class="c1"># iterate over all sinks, account for all sources</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">leftovers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">nbhd_ident</span><span class="p">,</span> <span class="n">nbhd_match</span><span class="p">)</span> <span class="ow">in</span> <span class="n">unique_hashes_2x</span><span class="p">:</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">query_ident</span><span class="p">,</span> <span class="n">query_match</span><span class="p">)</span> <span class="ow">in</span> <span class="n">unique_hashes_1x</span><span class="p">:</span>
+            <span class="n">overlap</span> <span class="o">=</span> <span class="n">query_match</span> <span class="o">&amp;</span> <span class="n">nbhd_match</span>
+        
+            <span class="k">if</span> <span class="n">overlap</span><span class="p">:</span>
+                <span class="c1">#print(f&quot;{nbhd_ident} &lt;= {query_ident} - {len(overlap)}&quot;)</span>
+                <span class="n">total</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">overlap</span><span class="p">)</span>
+                <span class="n">from_idx</span> <span class="o">=</span> <span class="n">source_idx</span><span class="p">[</span><span class="n">query_ident</span><span class="p">]</span>
+                <span class="n">to_idx</span> <span class="o">=</span> <span class="n">dest_idx</span><span class="p">[</span><span class="n">nbhd_ident</span><span class="p">]</span>
+                
+                <span class="n">src_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">from_idx</span><span class="p">)</span>
+                <span class="n">dest_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_idx</span><span class="p">)</span>
+                <span class="n">cnt_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">overlap</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">query_ident</span> <span class="o">==</span> <span class="n">nbhd_ident</span><span class="p">:</span>
+                    <span class="n">color_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;lightseagreen&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">color_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;palevioletred&quot;</span><span class="p">)</span>
+                <span class="n">label_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    
+        <span class="c1">#print(&#39;xxx&#39;, nbhd_ident, len(nbhd_match), total)</span>
+        <span class="n">leftover</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nbhd_match</span><span class="p">)</span> <span class="o">-</span> <span class="n">total</span>
+        
+        <span class="k">if</span> <span class="n">leftover</span><span class="p">:</span>
+            <span class="n">leftovers</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">nbhd_ident</span><span class="p">,</span> <span class="n">leftover</span><span class="p">))</span>
+
+        <span class="c1">#print(&#39;---&#39;)</span>
+        <span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">max_num</span> <span class="ow">and</span> <span class="n">num</span> <span class="o">&gt;=</span> <span class="n">max_num</span><span class="p">:</span>
+            <span class="k">break</span>
+            
+    <span class="k">if</span> <span class="n">leftovers</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">nbhd_ident</span><span class="p">,</span> <span class="n">leftover</span> <span class="ow">in</span> <span class="n">leftovers</span><span class="p">:</span>
+            <span class="n">from_idx</span> <span class="o">=</span> <span class="n">source_idx</span><span class="p">[</span><span class="s2">&quot;unassigned&quot;</span><span class="p">]</span>
+            <span class="n">to_idx</span> <span class="o">=</span> <span class="n">dest_idx</span><span class="p">[</span><span class="n">nbhd_ident</span><span class="p">]</span>
+
+            <span class="n">src_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">from_idx</span><span class="p">)</span>
+            <span class="n">dest_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_idx</span><span class="p">)</span>
+            <span class="n">cnt_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">leftover</span><span class="p">)</span>
+            <span class="n">color_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
+            <span class="n">label_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="c1">#print(&#39;XYZ&#39;, from_idx, to_idx)</span>
+        
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">go</span><span class="o">.</span><span class="n">Sankey</span><span class="p">(</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+          <span class="n">pad</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
+          <span class="n">thickness</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+          <span class="n">line</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">),</span>
+          <span class="n">label</span> <span class="o">=</span> <span class="n">labels</span><span class="p">,</span>
+          <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span>
+        <span class="p">),</span>
+        <span class="n">link</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+          <span class="n">source</span> <span class="o">=</span> <span class="n">src_l</span><span class="p">,</span>
+          <span class="n">target</span> <span class="o">=</span> <span class="n">dest_l</span><span class="p">,</span>
+          <span class="n">value</span> <span class="o">=</span> <span class="n">cnt_l</span><span class="p">,</span>
+          <span class="n">color</span> <span class="o">=</span> <span class="n">color_l</span><span class="p">,</span>
+          <span class="n">label</span> <span class="o">=</span> <span class="n">label_l</span><span class="p">,</span>
+      <span class="p">))])</span>
+    
+    <span class="k">return</span> <span class="n">fig</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[39]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">NUM</span><span class="o">=</span><span class="mi">9</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">make_fig</span><span class="p">(</span><span class="n">NUM</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;original genome contributions to top </span><span class="si">{</span><span class="n">NUM</span><span class="si">}</span><span class="s2"> neighborhood covers for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">acc</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output " data-mime-type="text/html">
+<div>
+        
+        
+            <div id="f7de765c-ecf9-44f3-9952-e5d5c93402f4" class="plotly-graph-div" style="height:1000px; width:800px;"></div>
+            <script type="text/javascript">
+                require(["plotly"], function(Plotly) {
+                    window.PLOTLYENV=window.PLOTLYENV || {};
+                    
+                if (document.getElementById("f7de765c-ecf9-44f3-9952-e5d5c93402f4")) {
+                    Plotly.newPlot(
+                        'f7de765c-ecf9-44f3-9952-e5d5c93402f4',
+                        [{"link": {"color": ["palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "lightseagreen", "palevioletred", "lightseagreen", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "palevioletred", "grey", "grey", "grey", "grey", "grey", "grey", "grey", "grey", "grey"], "label": ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""], "source": [0, 4, 6, 8, 9, 10, 12, 17, 24, 30, 0, 3, 4, 9, 10, 12, 23, 24, 32, 0, 1, 17, 0, 4, 9, 10, 2, 4, 7, 9, 11, 17, 20, 24, 3, 4, 9, 10, 17, 24, 32, 4, 6, 17, 24, 4, 9, 10, 13, 17, 20, 2, 4, 8, 9, 10, 17, 20, 24, 30, 34, 34, 34, 34, 34, 34, 34, 34, 34], "target": [35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 36, 36, 36, 36, 36, 36, 36, 36, 36, 37, 37, 37, 38, 38, 38, 38, 39, 39, 39, 39, 39, 39, 39, 39, 40, 40, 40, 40, 40, 40, 40, 41, 41, 41, 41, 42, 42, 42, 42, 42, 42, 43, 43, 43, 43, 43, 43, 43, 43, 43, 35, 36, 37, 38, 39, 40, 41, 42, 43], "value": [5, 9, 1, 1, 4, 1, 1, 112, 14, 1, 6, 1, 7, 8, 6, 1, 1, 3, 1, 2, 5017, 1, 5621, 3, 9, 1, 1, 6, 1, 6, 1, 11, 1, 1, 1, 2, 10, 2, 3, 3, 1, 3, 1, 1, 2, 2, 7, 1, 1, 5, 1, 1, 3, 1, 4, 3, 22, 4, 1, 1, 9363, 8596, 2746, 1927, 7361, 7342, 6714, 5576, 5066]}, "node": {"color": "blue", "label": ["CP048626.1 Blautia producta", "DABGPL010000001.1 TPA_asm: Escherichia", "JULC01000001.1 Bifidobacterium scardovii", "SMCQ01000001.1 Longibaculum muris", "HF995324.1 Firmicutes bacterium", "WMQE01000038.1 Turicibacter sanguinis", "AEKO01000011.1 Streptococcus vestibularis", "JAABLG010000001.1 Streptococcus vestibularis", "UQNI01000001.1 uncultured Ruminococcaceae", "QVGF01000001.1 Lachnospiraceae bacterium", "BAHW02000078.1 Clostridiales bacterium", "URPP01000001.1 uncultured Clostridiales", "CABHOC010000001.1 Bifidobacterium longum", "CZYD01000001.1 Terrisporobacter othiniensis", "CAAEUS010000001.1 TPA_asm: uncultured", "OBJV01000049.1 Clostridium tertium", "CM003575.1 Veillonella sp.", "PDMO01000909.1 Cyclospora cayetanensis", "CAAEVI010000001.1 TPA_asm: Erysipelotrichaceae", "CYYS01000001.1 Turicibacter sanguinis", "CYZX01000001.1 Clostridium disporicum", "CAAFUY010000001.1 TPA_asm: uncultured", "UQGF01000001.1 uncultured Actinomyces", "CP047191.1 Streptococcus thermophilus", "QUIC01000001.1 Ruminococcus sp.", "LZMY01000001.1 Haemophilus parainfluenzae", "NCVD01000051.1 Streptococcus mitis", "PNHV01000001.1 Actinomyces graevenitzii", "UQQU01000001.1 uncultured Clostridium", "FR883346.1 Clostridium sp.", "WKYR01000010.1 Megasphaera sp.", "JWDF01000004.1 Streptomyces cattleya", "JNHJ01000001.1 Phocaeicola vulgatus", "JRND01000001.1 Lancefieldella parvulum", "unassigned", "CVRR01000001.1 Roseburia faecis", "NIHW01000001.1 [Ruminococcus] gnavus", "DABGPL010000001.1 TPA_asm: Escherichia", "CP048626.1 Blautia producta", "CZAB01000001.1 [Clostridium] clostridioforme", "AENW01000060.1 Clostridium sp.", "HF996869.1 Clostridium hathewayi", "GL834357.1 Clostridium symbiosum", "WTVF01000090.1 Enterocloster aldenensis", "JH599901.1 Coprobacillus sp.", "JULC01000001.1 Bifidobacterium scardovii", "CABJAX010000001.1 Lachnospiraceae bacterium", "JH590866.1 Lachnospiraceae bacterium", "FMFU01000020.1 uncultured Clostridium", "MARQ01000035.1 Clostridium perfringens", "SMCQ01000001.1 Longibaculum muris", "SPHM01000100.1 Pseudoflavonifractor sp.", "CABIYM010000001.1 Anaerostipes caccae", "AZYA01000001.1 Bifidobacterium sp.", "FMEP01000075.1 uncultured Ruminococcus", "CP019721.1 Veillonella parvula", "NFLB01000001.1 [Clostridium] spiroforme", "USJS01000001.1 uncultured Blautia", "LT629846.1 Romboutsia sp.", "HF995324.1 Firmicutes bacterium", "LR793273.1 Streptococcus salivarius", "AEDS01000070.1 Veillonella atypica", "QGMT01000001.1 Clostridium paraputrificum", "WNAL01000100.1 Roseburia faecis", "WMQE01000038.1 Turicibacter sanguinis", "KV794391.1 Streptococcus sp.", "FACG01000001.1 Peptoclostridium difficile", "JAGQ01000001.1 [Ruminococcus] gnavus", "URPP01000001.1 uncultured Clostridiales", "UQNI01000001.1 uncultured Ruminococcaceae", "CAAFOE010000001.1 TPA_asm: uncultured", "CABHOC010000001.1 Bifidobacterium longum", "CZYD01000001.1 Terrisporobacter othiniensis", "JAABLG010000001.1 Streptococcus vestibularis", "KB851023.1 Clostridium clostridioforme", "CM003575.1 Veillonella sp.", "CYXV01000001.1 Roseburia faecis", "OBJV01000049.1 Clostridium tertium", "CAAEVI010000001.1 TPA_asm: Erysipelotrichaceae", "CYYS01000001.1 Turicibacter sanguinis", "CYZX01000001.1 Clostridium disporicum", "AEXI01000023.1 Veillonella parvula", "NIHV01000001.1 [Ruminococcus] gnavus", "AEKO01000011.1 Streptococcus vestibularis", "KE384163.1 Clostridium clostridioforme", "UQGF01000001.1 uncultured Actinomyces", "JAAIUC010000010.1 Tyzzerella nexilis", "QUIC01000001.1 Ruminococcus sp.", "NFLO01000001.1 Drancourtella sp.", "CAAEUS010000001.1 TPA_asm: uncultured", "CABJBJ010000001.1 Hungatella hathewayi", "QVGF01000001.1 Lachnospiraceae bacterium", "LZMY01000001.1 Haemophilus parainfluenzae", "CAAFUY010000001.1 TPA_asm: uncultured", "CAAKOI010000001.1 Flavonifractor plautii", "JWDF01000004.1 Streptomyces cattleya", "NCVD01000051.1 Streptococcus mitis", "JNHJ01000001.1 Phocaeicola vulgatus", "RQNR01000100.1 Clostridium perfringens", "SPHR01000011.1 Intestinibacter bartlettii", "JRND01000001.1 Lancefieldella parvulum", "UAVW01000021.1 [Clostridium] clostridioforme", "PDMO01000909.1 Cyclospora cayetanensis", "CABKQS010000001.1 [Clostridium] innocuum", "PNHV01000001.1 Actinomyces graevenitzii", "UQGB01000001.1 uncultured Clostridium", "HF995415.1 Coprobacillus sp.", "FR883346.1 Clostridium sp.", "AVLJ01000001.1 UNVERIFIED_ORG: Clostridioides", "CP047191.1 Streptococcus thermophilus", "BAHW02000078.1 Clostridiales bacterium", "QVIB01000001.1 Dorea longicatena", "CAAEOZ010000001.1 TPA_asm: uncultured", "WKYR01000010.1 Megasphaera sp.", "JAAISL010000100.1 [Clostridium] symbiosum", "CAAEKB010000001.1 TPA_asm: uncultured", "JVCZ01000002.1 Streptococcus parasanguinis", "NFJI01000001.1 [Clostridium] spiroforme", "UAWH01000019.1 Clostridium paraputrificum", "SQQK01000001.1 Bifidobacterium dentium", "UQQU01000001.1 uncultured Clostridium", "LR778174.1 Veillonella parvula", "HF999299.1 Clostridium bartlettii", "NFHY01000001.1 Drancourtella sp.", "CP015406.2 Flavonifractor plautii", "QXZZ01000034.1 Veillonella atypica", "LBCG01000001.1 MAG: Roseburia", "CABIZI010000001.1 Clostridiales bacterium", "KQ235823.1 Clostridium sp.", "JAALMI010000001.1 Clostridium perfringens", "DS499744.1 Anaerostipes caccae", "QSGP01000001.1 Enterocloster aldenensis"], "line": {"color": "black", "width": 0.5}, "pad": 15, "thickness": 20}, "type": "sankey"}],
+                        {"font": {"size": 10}, "height": 1000, "template": {"data": {"bar": [{"error_x": {"color": "#2a3f5f"}, "error_y": {"color": "#2a3f5f"}, "marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "bar"}], "barpolar": [{"marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "barpolar"}], "carpet": [{"aaxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "baxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "type": "carpet"}], "choropleth": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "choropleth"}], "contour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "contour"}], "contourcarpet": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "contourcarpet"}], "heatmap": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "heatmap"}], "heatmapgl": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "heatmapgl"}], "histogram": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "histogram"}], "histogram2d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "histogram2d"}], "histogram2dcontour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "histogram2dcontour"}], "mesh3d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "mesh3d"}], "parcoords": [{"line": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "parcoords"}], "pie": [{"automargin": true, "type": "pie"}], "scatter": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter"}], "scatter3d": [{"line": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter3d"}], "scattercarpet": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattercarpet"}], "scattergeo": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergeo"}], "scattergl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergl"}], "scattermapbox": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattermapbox"}], "scatterpolar": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolar"}], "scatterpolargl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolargl"}], "scatterternary": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterternary"}], "surface": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "surface"}], "table": [{"cells": {"fill": {"color": "#EBF0F8"}, "line": {"color": "white"}}, "header": {"fill": {"color": "#C8D4E3"}, "line": {"color": "white"}}, "type": "table"}]}, "layout": {"annotationdefaults": {"arrowcolor": "#2a3f5f", "arrowhead": 0, "arrowwidth": 1}, "coloraxis": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "colorscale": {"diverging": [[0, "#8e0152"], [0.1, "#c51b7d"], [0.2, "#de77ae"], [0.3, "#f1b6da"], [0.4, "#fde0ef"], [0.5, "#f7f7f7"], [0.6, "#e6f5d0"], [0.7, "#b8e186"], [0.8, "#7fbc41"], [0.9, "#4d9221"], [1, "#276419"]], "sequential": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "sequentialminus": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]]}, "colorway": ["#636efa", "#EF553B", "#00cc96", "#ab63fa", "#FFA15A", "#19d3f3", "#FF6692", "#B6E880", "#FF97FF", "#FECB52"], "font": {"color": "#2a3f5f"}, "geo": {"bgcolor": "white", "lakecolor": "white", "landcolor": "#E5ECF6", "showlakes": true, "showland": true, "subunitcolor": "white"}, "hoverlabel": {"align": "left"}, "hovermode": "closest", "mapbox": {"style": "light"}, "paper_bgcolor": "white", "plot_bgcolor": "#E5ECF6", "polar": {"angularaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "radialaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "scene": {"xaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "yaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "zaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}}, "shapedefaults": {"line": {"color": "#2a3f5f"}}, "ternary": {"aaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "baxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "caxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "title": {"x": 0.05}, "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "title": {"standoff": 15}, "zerolinecolor": "white", "zerolinewidth": 2}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "title": {"standoff": 15}, "zerolinecolor": "white", "zerolinewidth": 2}}}, "title": {"text": "original genome contributions to top 9 neighborhood covers for gut-clust-queries (p8808mo11)"}, "width": 800},
+                        {"responsive": true}
+                    ).then(function(){
+                            
+var gd = document.getElementById('f7de765c-ecf9-44f3-9952-e5d5c93402f4');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })
+                };
+                });
+            </script>
+        </div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
 </div>
 </body>
 
