@@ -2,7 +2,8 @@ import os
 
 NOTEBOOKS = [
     "index.ipynb",
-    "gut-real.ipynb"
+    "gut-real.ipynb",
+    "zymomock.ipynb",
 ]
 
 
