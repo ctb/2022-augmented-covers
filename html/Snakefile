@@ -8,7 +8,8 @@ NOTEBOOKS = [
     "gut-clust-queries2.ipynb",
     "gut-clustnbhds.ipynb",
     "gut-clustqueries.ipynb",
-    "gut-preclust.ipynb"
+    "gut-preclust.ipynb",
+    "zymomock-preclust.ipynb"
 ]
 
 
